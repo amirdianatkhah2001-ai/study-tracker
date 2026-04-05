@@ -164,11 +164,6 @@ function buildTracker() {
 }
 
 function handleCellClick(mod, week) {
-  const link = getFolderLink(mod, week);
-  if (link) {
-    // Open folder AND status popup
-    openFolder(mod, week);
-  }
   openPopup(mod, week);
 }
 
@@ -178,6 +173,20 @@ function openPopup(mod, week) {
   document.getElementById('popup-title').textContent = mod + ' — Week ' + week;
   const c = weeks[mod] && weeks[mod][week];
   document.getElementById('popup-note').value = c ? (c.note || '') : '';
+
+  // Show/hide folder button depending on whether a path is configured
+  const link = getFolderLink(mod, week);
+  const folderBtn = document.getElementById('popup-folder-btn');
+  if (link) {
+    folderBtn.style.display = 'block';
+    folderBtn.onclick = () => window.open(link, '_blank');
+    // Label changes based on device
+    const device = cfg.device || 'pc';
+    folderBtn.textContent = device === 'pc' ? '📁 Open Week ' + week + ' Folder' : '🌐 Open in OneDrive';
+  } else {
+    folderBtn.style.display = 'none';
+  }
+
   document.getElementById('popup-overlay').classList.add('open');
 }
 function closePopup() {
