@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Study Tracker</title>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- STATUS POPUP -->
+<div class="popup-overlay" id="popup-overlay">
+  <div class="popup">
+    <div class="popup-title" id="popup-title"></div>
+    <div class="popup-sub">Pick a status</div>
+    <div class="status-grid">
+      <div class="status-btn done"    onclick="setStatus('done')">✓ Done</div>
+      <div class="status-btn partial" onclick="setStatus('partial')">~ Partial</div>
+      <div class="status-btn missed"  onclick="setStatus('missed')">✗ Missed</div>
+      <div class="status-btn review"  onclick="setStatus('review')">↻ Review</div>
+      <div class="status-btn holiday" onclick="setStatus('holiday')">⌂ Holiday</div>
+      <div class="status-btn exam"    onclick="setStatus('exam')">★ Exam</div>
+    </div>
+    <textarea class="popup-note" id="popup-note" rows="2" placeholder="Note (optional)..."></textarea>
+    <div style="display:flex;gap:7px;">
+      <div class="status-btn clear" style="flex:1;text-align:center;padding:7px;" onclick="setStatus('')">Clear</div>
+      <button class="popup-close" style="flex:1;" onclick="closePopup()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- LAB POPUP -->
+<div class="popup-overlay" id="lab-popup-overlay">
+  <div class="lab-popup">
+    <div class="popup-title" id="lab-popup-title"></div>
+    <div class="popup-sub">Labs for this week</div>
+    <div class="existing-labs" id="existing-labs-list"></div>
+    <div style="font-size:11px;color:var(--text2);margin-bottom:8px;font-weight:600;">Add new lab</div>
+    <div class="lab-fields">
+      <div><label>Lab name (e.g. EP3, MS2)</label><input id="lp-name" placeholder="Lab name..."/></div>
+      <div><label>Status</label>
+        <select id="lp-status"><option value="pending">Pending</option><option value="done">Done</option><option value="missed">Missed</option></select>
+      </div>
+      <div><label>Note (optional)</label><input id="lp-note" placeholder="Optional note..."/></div>
+    </div>
+    <div style="display:flex;gap:7px;">
+      <button class="btn save-btn" style="flex:1;" onclick="saveLabFromPopup()">+ Add Lab</button>
+      <button class="popup-close" style="flex:1;" onclick="closeLabPopup()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrapper">
+  <div class="sidebar">
+    <div class="sidebar-brand">📚 Study Tracker</div>
+    <div class="nav-item active" onclick="showPage('dashboard',this)">🏠 Dashboard</div>
+    <div class="nav-item" onclick="showPage('exams',this)">📅 Exams &amp; Events</div>
+    <div class="nav-item" onclick="showPage('settings',this)">⚙️ Settings</div>
+  </div>
+
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-title">Dashboard</div>
+      <div class="page-sub" id="dash-sub"></div>
+      <div id="notif-banner"></div>
+      <div class="mini-stats" id="dash-mini-stats"></div>
+
+      <div class="card">
+        <div class="card-title">Weekly Tracker — click any cell to update</div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green-bg);border:1px solid var(--green)"></div>Done</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--amber-bg);border:1px solid var(--amber)"></div>Partial</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red-bg);border:1px solid var(--red)"></div>Missed</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--blue-bg);border:1px solid var(--blue)"></div>Review</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--gray-bg);border:1px solid #333"></div>Holiday</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#2a1a00;border:1px solid #7a4a00"></div>Exam</div>
+        </div>
+        <div class="tracker-wrap"><table class="tracker" id="tracker-table"></table></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          Upcoming — Exams, Deadlines &amp; Events
+          <button class="icon-btn" onclick="toggleAddEvent()" title="Add event">＋</button>
+        </div>
+        <div class="add-event-form" id="add-event-form">
+          <div class="ev-form-grid">
+            <div>
+              <div class="form-label">Type</div>
+              <select id="ev-type"><option value="exam">Exam</option><option value="deadline">Deadline</option><option value="event">Other Event</option></select>
+            </div>
+            <div>
+              <div class="form-label">Module / Label</div>
+              <input id="ev-mod" placeholder="e.g. EP, RTS..."/>
+            </div>
+          </div>
+          <div class="ev-form-full">
+            <div class="form-label">Description</div>
+            <input id="ev-desc" placeholder="e.g. Past paper, Poster submission..."/>
+          </div>
+          <div class="ev-form-grid">
+            <div><div class="form-label">Date</div><input id="ev-date" type="date"/></div>
+            <div><div class="form-label">Time (optional)</div><input id="ev-time" type="time"/></div>
+          </div>
+          <div class="form-label" style="margin-top:8px;">Reminders</div>
+          <div class="reminder-checks" id="reminder-checks">
+            <label><input type="checkbox" value="10080" checked/> 1 week before</label>
+            <label><input type="checkbox" value="4320" checked/> 3 days before</label>
+            <label><input type="checkbox" value="1440" checked/> 1 day before</label>
+            <label><input type="checkbox" value="120"/> 2 hours before</label>
+            <label><input type="checkbox" value="30"/> 30 min before</label>
+          </div>
+          <div class="form-label" style="margin-top:10px;">Custom repeat reminder</div>
+          <div class="custom-repeat-row">
+            <span style="font-size:12px;color:var(--text2);">Every</span>
+            <input id="repeat-val" type="number" min="1" placeholder="e.g. 2" style="width:70px;"/>
+            <select id="repeat-unit">
+              <option value="1440">days</option>
+              <option value="60">hours</option>
+              <option value="10080">weeks</option>
+            </select>
+            <span style="font-size:12px;color:var(--text2);">until event</span>
+            <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="repeat-enable"/> Enable</label>
+          </div>
+          <div class="form-label" style="margin-top:10px;">Telegram notification</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <input id="ev-tg-chat" placeholder="Your Telegram Chat ID..." style="flex:1;background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius);color:var(--text);font-size:12px;padding:6px 9px;font-family:inherit;"/>
+            <button class="btn" onclick="testTelegram()" style="white-space:nowrap;">Test 📨</button>
+          </div>
+          <div class="ev-form-actions">
+            <button class="btn save-btn" onclick="addEvent()">+ Add Event</button>
+            <button class="btn" onclick="toggleAddEvent()">Cancel</button>
+          </div>
+        </div>
+        <div class="events-list" id="events-list"></div>
+      </div>
+    </div>
+
+    <!-- EXAMS & EVENTS PAGE -->
+    <div class="page" id="page-exams">
+      <div class="page-title">Exams &amp; Events</div>
+      <div class="page-sub">All events sorted by date. Set exam dates per module or add custom events on the Dashboard.</div>
+      <div class="card">
+        <div class="card-title">Exam dates per module</div>
+        <div id="exam-mod-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">All events &amp; deadlines</div>
+        <div class="events-list" id="all-events-list"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="page-title">Settings &amp; Customise</div>
+      <div class="page-sub">Modules, OneDrive folders, Telegram, start date, data backup</div>
+
+      <div class="settings-section">
+        <h3>Term settings</h3>
+        <div class="setting-row">
+          <div class="setting-label">Study year start date <span class="hint">(auto-detects current week)</span></div>
+          <input class="setting-input" type="date" id="set-start-date" onchange="updateStartDate(this.value)"/>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label">Total number of weeks</div>
+          <input class="setting-input" type="number" id="set-weeks" min="1" max="52" onchange="updateWeeks(this.value)"/>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label">Term / year label</div>
+          <input class="setting-input" id="set-label" onchange="updateLabel(this.value)"/>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>Telegram Notifications</h3>
+        <div class="info-box">Reminders are sent via Telegram bot. Enter your Chat ID below — get it by messaging <strong>@userinfobot</strong> on Telegram.</div>
+        <div class="setting-row">
+          <div class="setting-label">Your Telegram Chat ID</div>
+          <input class="setting-input" id="tg-chat-id" placeholder="e.g. 123456789" onchange="saveTgChatId(this.value)"/>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label">Bot token (pre-filled)</div>
+          <input class="setting-input" id="tg-token" placeholder="Bot token"/>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label">Test connection</div>
+          <button class="btn save-btn" onclick="testTelegram()">Send test message 📨</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>Modules &amp; OneDrive Folders</h3>
+        <div class="info-box">
+          <strong>PC:</strong> Set a local Windows path like <code>C:\Users\You\OneDrive\EP</code> — clicking a cell opens that folder in Explorer.<br/>
+          <strong>iPad / other devices:</strong> Set the OneDrive web share link for that folder instead. The app detects which to use based on your device setting below.
+        </div>
+        <div class="setting-row">
+          <div class="setting-label">This device type</div>
+          <select class="setting-input" id="set-device" onchange="saveDevice(this.value)">
+            <option value="pc">Windows PC (local paths)</option>
+            <option value="web">iPad / Mac / Other (web links)</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label">Week folder mode</div>
+          <select class="setting-input" id="set-week-mode" onchange="saveWeekMode(this.value)">
+            <option value="auto">Auto-detect (folder named 1, 2, 3...)</option>
+            <option value="manual">Manual (set each week's folder)</option>
+          </select>
+        </div>
+        <div class="modules-list" id="modules-list"></div>
+        <div class="add-mod-row">
+          <input id="new-mod-input" placeholder="New module name..."/>
+          <button class="btn save-btn" onclick="addModule()">+ Add</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>Browser Notifications</h3>
+        <div class="setting-row">
+          <div class="setting-label">In-browser push notifications (backup to Telegram)</div>
+          <button class="btn" id="notif-btn" onclick="requestNotifPerm()">Enable</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>Data Backup</h3>
+        <div class="setting-row">
+          <div class="setting-label">Export all data as JSON</div>
+          <button class="btn" onclick="exportData()">Export JSON</button>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label">Import from JSON backup</div>
+          <input type="file" id="import-file" accept=".json" onchange="importData(event)" style="display:none"/>
+          <button class="btn" onclick="document.getElementById('import-file').click()">Import JSON</button>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label">Clear ALL data</div>
+          <button class="btn danger-btn" onclick="clearAll()">Clear everything</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
