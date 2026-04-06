@@ -334,3 +334,66 @@ td.wk-cell.cur-week { background: rgba(74,158,47,0.07); }
   .mini-stats { grid-template-columns: 1fr 1fr; }
 }
 </style>
+
+/* ── NEW STATUS COLOURS ──────────────────────────────────────────────────────*/
+/* Summarised = solid green (was 'done') */
+.dot.summarised { background: #1a3a10; color: #7ec84a; }
+/* Read = lighter green */
+.dot.read       { background: #2a4a18; color: #a8e070; }
+
+/* Status popup new buttons */
+.status-btn.summarised { background:#1a3a10; color:#7ec84a; border-color:#4a9e2f; }
+.status-btn.read       { background:#2a4a18; color:#a8e070; border-color:#6ab030; }
+
+/* Auto-missed cell — faded red tint on the cell itself */
+td.wk-cell.auto-missed { background: rgba(158,47,47,0.06); }
+td.wk-cell.auto-missed .dot.missed { opacity: 0.55; }
+
+/* Status grid — now 4 cols to fit 8 buttons */
+.status-grid { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+/* ── WEEKLY SCHEDULE ─────────────────────────────────────────────────────────*/
+.sched-week { margin-bottom: 14px; }
+.sched-week-label {
+  font-size: 11px; font-weight: 700; color: var(--text2);
+  text-transform: uppercase; letter-spacing: 0.04em;
+  padding: 6px 0 6px; border-bottom: 0.5px solid var(--border);
+  margin-bottom: 4px;
+}
+.sched-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 8px; border-radius: var(--radius);
+  margin-bottom: 3px; background: var(--bg3);
+  border-left: 3px solid #444;
+}
+.sched-row.type-exam     { border-left-color: #f0a030; }
+.sched-row.type-deadline { border-left-color: var(--blue-t); }
+.sched-row.type-event    { border-left-color: var(--purple-t); }
+.sched-day   { font-size: 11px; font-weight: 700; color: var(--text2); width: 28px; flex-shrink: 0; }
+.sched-date  { font-size: 11px; color: var(--text2); width: 68px; flex-shrink: 0; }
+.sched-mod   { font-size: 12px; font-weight: 700; width: 55px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; }
+.sched-desc  { flex: 1; font-size: 12px; color: var(--text); }
+.sched-days  { font-size: 12px; font-weight: 700; min-width: 36px; text-align: right; flex-shrink: 0; }
+
+/* ── EXAM ENTRIES ────────────────────────────────────────────────────────────*/
+.add-exam-form { background: var(--bg3); border-radius: var(--radius); padding: 12px; margin-bottom: 4px; }
+.fi {
+  width: 100%; background: var(--bg2); border: 0.5px solid var(--border2);
+  border-radius: var(--radius); color: var(--text); font-size: 12px;
+  padding: 6px 9px; font-family: inherit;
+}
+.fi:focus { outline: none; border-color: #555; }
+.exam-entry {
+  background: var(--bg3); border: 0.5px solid var(--border);
+  border-radius: var(--radius); padding: 10px 12px; margin-bottom: 8px;
+}
+.exam-entry-header {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.exam-entry-mod  { font-weight: 700; font-size: 13px; width: 70px; }
+.exam-entry-date { font-size: 12px; color: var(--text2); flex: 1; }
+.review-boxes {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  margin-top: 8px; padding-top: 8px;
+  border-top: 0.5px solid var(--border);
+}
